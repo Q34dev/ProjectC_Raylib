@@ -6,18 +6,19 @@
     #include <emscripten/emscripten.h>
 #endif
 
-int windowWidth = 700;
-int windowHeight = 600;
+int windowWidth = 800;
+int windowHeight = 700;
 
-unsigned int cellCountX = 5;
-unsigned int cellCountY = 4;
-float cellSize = 80.f;
+unsigned int cellCountX = 7;
+unsigned int cellCountY = 6;
+float cellSize = 60.f;
 float cellDist = 10.f;
 
 float cellPosX, cellPosY,startCellPosX;
 float cellHalf = 1.f;
 int cellTexSize = 128;
 float cellTexScale = 1.f;
+int colArrowPosY;
 Vector2 backRectSize, backRectPos;
 
 Vector2** cellPositions;
@@ -26,6 +27,8 @@ int** board;
 
 Texture chipRedTex, chipYellowTex;
 Texture colArrowTex;
+
+Color player1Color, player2Color;
 
 int currentPlayerIndex = 1;
 
@@ -42,6 +45,9 @@ int main()
 	chipRedTex = LoadTexture("resources/connect4_chip_red.png");
     chipYellowTex = LoadTexture("resources/connect4_chip_yellow.png");
     colArrowTex = LoadTexture("resources/column_select_arrow.png");
+
+    player1Color = (Color){ 0xFF, 0x00, 0x30, 0xFF };
+    player2Color = (Color){ 0xFF, 0x9D, 0x00, 0xFF };
 
     CellGridSetup();
 
@@ -73,6 +79,12 @@ static void UpdateDrawFrame(void)
     BeginDrawing();
 
     ClearBackground(RAYWHITE);
+
+    // draw the player turn text
+    char str[128];
+    sprintf(str,"Player %d turn",currentPlayerIndex);
+    int textWidthHalf = MeasureText(str, 30) * 0.5f;
+    DrawText(str, (windowWidth*0.5f)-textWidthHalf, 20, 30, currentPlayerIndex == 1 ? player1Color : player2Color);
     
     // draw the back rectangle
     DrawRectangle(backRectPos.x, backRectPos.y, backRectSize.x, backRectSize.y, BLUE);
@@ -91,8 +103,9 @@ static void UpdateDrawFrame(void)
                 if (firstEmptyRow < 0) break;
 
                 // draw an arrow above the column
-                Vector2 colArrowPos = {cellPositions[0][col].x-cellHalf, cellPositions[0][col].y-130.f};
-                DrawTextureEx(colArrowTex, colArrowPos, 0.f, cellTexScale, BLUE);
+                Vector2 colArrowPos = {cellPositions[0][col].x-cellHalf, colArrowPosY};
+                Color arrowColor = currentPlayerIndex == 1 ? player1Color : player2Color;
+                DrawTextureEx(colArrowTex, colArrowPos, 0.f, cellTexScale, arrowColor);
 
                 if (IsMouseButtonPressed(0))
                 { // if the left mouse button was pressed this frame
@@ -171,6 +184,8 @@ void CellGridSetup()
         for (int col = 0; col < cellCountX; col++)
             board[row][col] = 0;
     }
+
+    colArrowPosY = cellPositions[0][0].y - cellSize - 50;
 }
 
 void DrawCell(Vector2 cellPos, int boardVal)
