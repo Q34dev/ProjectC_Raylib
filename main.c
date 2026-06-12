@@ -8,7 +8,9 @@
 int main()
 {
     FileManager_ReadConfigFile();
+    
     GameLogic_Setup();
+
     GUI_DrawGame();
 
     return 0;

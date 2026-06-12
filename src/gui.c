@@ -23,7 +23,7 @@ float *columnEndPositions;
 Texture chipRedTex, chipYellowTex;
 Texture colArrowTex;
 
-Color player1Color, player2Color;
+Color player1Color, player2Color, drawColor;
 
 void CellGridSetup()
 {
@@ -122,11 +122,23 @@ void UpdateDrawFrame()
     else
     { // if the game is finished
         
+        int winner = GetWinner();
+        
         // draw the game over text
+        Color textColor = player1Color;
         char str[32];
-        sprintf(str, "Player %d won!", playerIndex);
+        if (winner != 3)
+        {
+            sprintf(str, "Player %d won!", playerIndex);
+            textColor =  winner == 1 ? player1Color : player2Color;
+        }
+        else
+        {
+            sprintf(str, "A draw!");
+            textColor = drawColor;
+        }
         int textWidthHalf = MeasureText(str, 30) * 0.5f;
-        DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, playerIndex == 1 ? player1Color : player2Color);
+        DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, textColor);
     }
 
     // draw the cells
@@ -151,6 +163,7 @@ void GUI_DrawGame()
 
     player1Color = (Color){0xFF, 0x00, 0x30, 0xFF};
     player2Color = (Color){0xFF, 0x9D, 0x00, 0xFF};
+    drawColor = (Color){0xFF, 0x4F, 0x18, 0xFF};
 
     Vector2 boardSize = GetBoardSize();
     cellCountX = boardSize.x;

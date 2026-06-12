@@ -1,10 +1,12 @@
 #include "raylib.h"
+#include "../include/file_manager.h"
 
 int **board;
-Vector2 boardSize;
+Vector2 boardSize = (Vector2){7,6};
 
 int gameActive;
 int currentPlayerIndex;
+int winnerIndex;
 
 void SetBoardWidth(int width)
 {
@@ -19,10 +21,25 @@ Vector2 GetBoardSize()
     return boardSize;
 }
 
+// 1 - empty, 0 - not empty
+int IsBoardEmpty(int cellCountX, int cellCountY, int **board)
+{
+    for (int row = 0; row < boardSize.y; row++)
+    {
+        for (int col = 0; col < boardSize.x; col++)
+        {
+            if (board[row][col] != 0)
+                return 0;
+        }
+    }
+    return 1;
+}
+
 void GameLogic_Setup()
 {
     gameActive = 1;
     currentPlayerIndex = 1;
+    winnerIndex = 0;
 
     int boardSizeX = boardSize.x;
     int boardSizeY = boardSize.y;
@@ -37,6 +54,10 @@ void GameLogic_Setup()
         for (int col = 0; col < boardSizeX; col++)
             board[row][col] = 0;
     }
+
+    // load the game data from the save file
+    LoadGameState(&currentPlayerIndex, boardSizeX, boardSizeY, board);
+    int newGame = IsBoardEmpty(boardSizeX, boardSizeY, board);
 }
 
 int GetBoardVal(int rowIndex, int columnIndex)
@@ -123,6 +144,8 @@ int CheckIfFourCellsBelongsToOnePlayer(int y, int x, int direction) // 0 - right
 int IsGameFinished()
 {
     int result = 0;
+    int boardFull = 1;
+
     for (int row = 0; row < boardSize.y; row++)
     {
         for (int col = 0; col < boardSize.x; col++)
@@ -131,11 +154,24 @@ int IsGameFinished()
             {
                 result = CheckIfFourCellsBelongsToOnePlayer(row, col, i);
                 if (result != 0)
+                { // if there are 4 chips in a row/column/diagonal
+                    // return the index of the owner of those chips
                     return result;
+                }
+            }
+
+            if (boardFull == 1 && board[row][col] == 0)
+            { // if there is at least one empty cell
+                boardFull = 0;
             }
         }
     }
-    return 0;
+    // if neither of the players have won the game yet
+
+    if (boardFull)
+        return 3; // draw
+    else
+        return 0; // game not finished
 }
 
 int IsGameActive()
@@ -144,7 +180,14 @@ int IsGameActive()
 }
 void GameOver(int winner)
 {
+    winnerIndex = winner;
+
     gameActive = false;
+}
+
+int GetWinner()
+{ // return 0 if no winner, 1 if player 1 won, 2 if player 2 won & 3 if its a draw
+    return winnerIndex;
 }
 
 void PlayerPlaceChip(int rowIndex, int columnIndex)
@@ -153,13 +196,22 @@ void PlayerPlaceChip(int rowIndex, int columnIndex)
 
     int gameFinished = IsGameFinished();
 
-    if (gameFinished == 1 || gameFinished == 2)
-    { // if one of the players won
+    if (gameFinished == 1
+     || gameFinished == 2
+     || gameFinished == 3)
+    { // if one of the players won or its a draw
+
+        // save a clear game board to the save file
+        ClearGameState(boardSize.x, boardSize.y);
+
         GameOver(gameFinished);
     }
     else
     { // if the game is not finished
 
         SwitchPlayerTurn();
+
+        // save the game data to the save file
+        SaveGameState(currentPlayerIndex, boardSize.x, boardSize.y, board);
     }
 }
