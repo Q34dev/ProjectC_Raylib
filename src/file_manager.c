@@ -109,3 +109,16 @@ void LoadGame(int *playerTurnIndex, int cellCountX, int cellCountY, int **board)
 
     fclose(saveFile);
 }
+// 1 - empty, 0 - not empty
+int IsBoardEmpty(int cellCountX, int cellCountY, int **board)
+{
+    for (int row = 0; row < cellCountY; row++)
+    {
+        for (int col = 0; col < cellCountX; col++)
+        {
+            if (board[row][col] != 0)
+                return 0;
+        }
+    }
+    return 1;
+}
