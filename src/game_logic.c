@@ -1,3 +1,17 @@
+
+
+int currentPlayerIndex = 1;
+
+int GetCurrentPlayerIndex()
+{
+    return currentPlayerIndex;
+}
+
+void SwitchPlayer()
+{
+    currentPlayerIndex = currentPlayerIndex == 1 ? 2 : 1;
+}
+
 // returns 0 if nothing found, 1 if player 1 won, 2 if player 2 won
 int IsGameFinished(int cellCountX, int cellCountY, int **board)
 {
