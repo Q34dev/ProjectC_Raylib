@@ -5,11 +5,23 @@ Vector2 boardSize;
 
 int currentPlayerIndex;
 
-void GameLogic_Setup(Vector2 cellCount)
+void SetBoardWidth(int width)
+{
+    boardSize.x = width;
+}
+void SetBoardHeight(int height)
+{
+    boardSize.y = height;
+}
+Vector2 GetBoardSize()
+{
+    return boardSize;
+}
+
+void GameLogic_Setup()
 {
     currentPlayerIndex = 1;
 
-    boardSize = cellCount;
     int boardSizeX = boardSize.x;
     int boardSizeY = boardSize.y;
 
@@ -109,6 +121,7 @@ int CheckIfFourCellsBelongsToOnePlayer(int y, int x, int direction, int cellCoun
         }
         return 0;
     }
+    return 0;
 }
 // returns 0 if nothing found, 1 if player 1 won, 2 if player 2 won
 int IsGameFinished(int cellCountX, int cellCountY, int **board)

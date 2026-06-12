@@ -4,7 +4,11 @@
 #include "../src/game_logic.c"
 #include "raylib.h"
 
-void GameLogic_Setup(Vector2 cellCount);
+void SetBoardWidth(int width);
+void SetBoardHeight(int height);
+Vector2 GetBoardSize();
+
+void GameLogic_Setup();
 
 int GetBoardVal(int rowIndex, int columnIndex);
 int GetFirstEmptyRowIndex(int columnIndex);

@@ -4,8 +4,8 @@
 int windowWidth = 800;
 int windowHeight = 700;
 
-unsigned int cellCountX = 7;
-unsigned int cellCountY = 6;
+int cellCountX;
+int cellCountY;
 float cellSize = 60.f;
 float cellDist = 10.f;
 
@@ -160,6 +160,10 @@ void GUI_DrawGame()
 
     player1Color = (Color){0xFF, 0x00, 0x30, 0xFF};
     player2Color = (Color){0xFF, 0x9D, 0x00, 0xFF};
+
+    Vector2 boardSize = GetBoardSize();
+    cellCountX = boardSize.x;
+    cellCountY = boardSize.y;
 
     CellGridSetup();
 
