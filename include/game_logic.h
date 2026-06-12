@@ -30,4 +30,6 @@ int GetWinner();
 
 void PlayerPlaceChip(int rowIndex, int columnIndex);
 
+void ResetGame();
+
 #endif

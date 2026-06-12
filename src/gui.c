@@ -107,8 +107,8 @@ void UpdateDrawFrame()
     }
 
     int playerIndex = GetCurrentPlayerIndex();
-
-    if (IsGameActive())
+    
+    if (IsGameActive() == 1)
     { // if the game is not finished
 
         // check mouse input
@@ -153,6 +153,9 @@ void UpdateDrawFrame()
         int textWidthHalf = MeasureText(str, 30) * 0.5f;
         DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, textColor);
     }
+
+    // draw the reset game button
+    DrawResetButton(windowHeight);
 
     EndDrawing();
 }

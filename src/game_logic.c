@@ -49,7 +49,7 @@ void GameLogic_Setup()
     int len = sizeof(int *) * boardSizeY + sizeof(int) * boardSizeX * boardSizeY;
     board = (int **)malloc(len);
     int *bPtr = (int *)(board + boardSizeY);
-    for (int row = 0; row < boardSize.y; row++)
+    for (int row = 0; row < boardSizeY; row++)
     {
         board[row] = (bPtr + boardSizeX * row);
         for (int col = 0; col < boardSizeX; col++)
@@ -183,7 +183,7 @@ void GameOver(int winner)
 {
     winnerIndex = winner;
 
-    gameActive = false;
+    gameActive = 0;
 }
 
 int GetWinner()
@@ -215,4 +215,22 @@ void PlayerPlaceChip(int rowIndex, int columnIndex)
         // save the game data to the save file
         SaveGameState(currentPlayerIndex, boardSize.x, boardSize.y, board);
     }
+}
+
+void ResetGame()
+{
+    gameActive = 1;
+    currentPlayerIndex = 1;
+    winnerIndex = 0;
+    newGame = 1;
+
+    // reset the board
+    for (int row = 0; row < boardSize.y; row++)
+    {
+        for (int col = 0; col < boardSize.x; col++)
+            board[row][col] = 0;
+    }
+
+    // save a clear game board to the save file
+    ClearGameState(boardSize.x, boardSize.y);
 }

@@ -8,4 +8,6 @@ void PlaceChip(int rowIndex, int columnIndex);
 // returns the selected column's index
 int CheckMouseInput(float minXPos, int cellCountX, float* columnEndPositions);
 
+void DrawResetButton(int windowHeight);
+
 #endif
