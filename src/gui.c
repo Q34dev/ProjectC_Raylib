@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "../include/game_logic.h"
+
 int windowWidth = 800;
 int windowHeight = 700;
 
@@ -17,7 +18,6 @@ Vector2 backRectSize, backRectPos;
 
 Vector2 **cellPositions;
 float *columnEndPositions;
-int **board;
 
 Texture chipRedTex, chipYellowTex;
 Texture colArrowTex;
@@ -68,17 +68,6 @@ void CellGridSetup()
         columnEndPositions[col] = cellPositions[0][col].x + cellHalf + cellDist;
     }
 
-    // allocate memory for the board array
-    len = sizeof(int *) * cellCountY + sizeof(int) * cellCountX * cellCountY;
-    board = (int **)malloc(len);
-    int *bPtr = (int *)(board + cellCountY);
-    for (int row = 0; row < cellCountY; row++)
-    {
-        board[row] = (bPtr + cellCountX * row);
-        for (int col = 0; col < cellCountX; col++)
-            board[row][col] = 0;
-    }
-
     colArrowPosY = cellPositions[0][0].y - cellSize - 50;
 }
 
@@ -98,21 +87,9 @@ void DrawCell(Vector2 cellPos, int boardVal)
     }
 }
 
-int GetFirstEmptyRowIndex(int columnIndex)
-{
-    for (int row = cellCountY - 1; row >= 0; row--)
-    {
-        if (board[row][columnIndex] == 0)
-            return row;
-    }
-    return -1;
-}
-
 void PlaceChip(int rowIndex, int columnIndex)
 {
-    board[rowIndex][columnIndex] = GetCurrentPlayerIndex();
-
-    SwitchPlayer();
+    PlayerPlaceChip(rowIndex, columnIndex);
 }
 
 void UpdateDrawFrame()
@@ -122,10 +99,11 @@ void UpdateDrawFrame()
     ClearBackground(RAYWHITE);
 
     // draw the player turn text
+    int playerIndex = GetCurrentPlayerIndex();
     char str[128];
-    sprintf(str, "Player %d turn", currentPlayerIndex);
+    sprintf(str, "Player %d turn", playerIndex);
     int textWidthHalf = MeasureText(str, 30) * 0.5f;
-    DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, currentPlayerIndex == 1 ? player1Color : player2Color);
+    DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, playerIndex == 1 ? player1Color : player2Color);
 
     // draw the back rectangle
     DrawRectangle(backRectPos.x, backRectPos.y, backRectSize.x, backRectSize.y, BLUE);
@@ -146,7 +124,7 @@ void UpdateDrawFrame()
 
                 // draw an arrow above the column
                 Vector2 colArrowPos = {cellPositions[0][col].x - cellHalf, colArrowPosY};
-                Color arrowColor = currentPlayerIndex == 1 ? player1Color : player2Color;
+                Color arrowColor = playerIndex == 1 ? player1Color : player2Color;
                 DrawTextureEx(colArrowTex, colArrowPos, 0.f, cellTexScale, arrowColor);
 
                 if (IsMouseButtonPressed(0))
@@ -165,7 +143,7 @@ void UpdateDrawFrame()
     {
         for (int col = 0; col < cellCountX; col++)
         {
-            DrawCell(cellPositions[row][col], board[row][col]);
+            DrawCell(cellPositions[row][col], GetBoardVal(row, col));
         }
     }
 
@@ -201,4 +179,9 @@ void GUI_DrawGame()
     UnloadTexture(chipRedTex);
 
     CloseWindow();
+}
+
+Vector2 GetCellCount()
+{
+    return (Vector2){ cellCountX, cellCountY };
 }
