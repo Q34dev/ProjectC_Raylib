@@ -3,6 +3,7 @@
 int **board;
 Vector2 boardSize;
 
+int gameActive;
 int currentPlayerIndex;
 
 void SetBoardWidth(int width)
@@ -20,6 +21,7 @@ Vector2 GetBoardSize()
 
 void GameLogic_Setup()
 {
+    gameActive = 1;
     currentPlayerIndex = 1;
 
     int boardSizeX = boardSize.x;
@@ -59,21 +61,15 @@ void SwitchPlayerTurn()
 {
     currentPlayerIndex = currentPlayerIndex == 1 ? 2 : 1;
 }
-void PlayerPlaceChip(int rowIndex, int columnIndex)
-{
-    board[rowIndex][columnIndex] = currentPlayerIndex;
-
-    SwitchPlayerTurn();
-}
 
 // returns 0 if nothing found, 1 if player 1 won, 2 if player 2 won
-int CheckIfFourCellsBelongsToOnePlayer(int y, int x, int direction, int cellCountX, int cellCountY, int **board) // 0 - right, 1 - diagonalDownRight, 2 - down,3 - diagonalDownLeft
+int CheckIfFourCellsBelongsToOnePlayer(int y, int x, int direction) // 0 - right, 1 - diagonalDownRight, 2 - down,3 - diagonalDownLeft
 {
     switch (direction)
     {
     case 0:
 
-        if (y + 3 >= cellCountY)
+        if (y + 3 >= boardSize.y)
         {
             return 0;
         }
@@ -83,11 +79,11 @@ int CheckIfFourCellsBelongsToOnePlayer(int y, int x, int direction, int cellCoun
         }
         return 0;
     case 1:
-        if (y + 3 >= cellCountY)
+        if (y + 3 >= boardSize.y)
         {
             return 0;
         }
-        if (x + 3 >= cellCountX)
+        if (x + 3 >= boardSize.x)
         {
             return 0;
         }
@@ -97,7 +93,7 @@ int CheckIfFourCellsBelongsToOnePlayer(int y, int x, int direction, int cellCoun
         }
         return 0;
     case 2:
-        if (x + 3 >= cellCountX)
+        if (x + 3 >= boardSize.x)
         {
             return 0;
         }
@@ -107,7 +103,7 @@ int CheckIfFourCellsBelongsToOnePlayer(int y, int x, int direction, int cellCoun
         }
         return 0;
     case 3:
-        if (y + 3 >= cellCountY)
+        if (y + 3 >= boardSize.y)
         {
             return 0;
         }
@@ -124,20 +120,46 @@ int CheckIfFourCellsBelongsToOnePlayer(int y, int x, int direction, int cellCoun
     return 0;
 }
 // returns 0 if nothing found, 1 if player 1 won, 2 if player 2 won
-int IsGameFinished(int cellCountX, int cellCountY, int **board)
+int IsGameFinished()
 {
     int result = 0;
-    for (int row = 0; row < cellCountY; row++)
+    for (int row = 0; row < boardSize.y; row++)
     {
-        for (int col = 0; col < cellCountX; col++)
+        for (int col = 0; col < boardSize.x; col++)
         {
             for (int i = 0; i < 4; i++)
             {
-                result = CheckIfFourCellsBelongsToOnePlayer(row, col, i, cellCountX, cellCountY, board);
+                result = CheckIfFourCellsBelongsToOnePlayer(row, col, i);
                 if (result != 0)
                     return result;
             }
         }
     }
     return 0;
+}
+
+int IsGameActive()
+{
+    return gameActive;
+}
+void GameOver(int winner)
+{
+    gameActive = false;
+}
+
+void PlayerPlaceChip(int rowIndex, int columnIndex)
+{
+    board[rowIndex][columnIndex] = currentPlayerIndex;
+
+    int gameFinished = IsGameFinished();
+
+    if (gameFinished == 1 || gameFinished == 2)
+    { // if one of the players won
+        GameOver(gameFinished);
+    }
+    else
+    { // if the game is not finished
+
+        SwitchPlayerTurn();
+    }
 }
