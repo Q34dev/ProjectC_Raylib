@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "../include/game_logic.h"
+#include "../include/player_input.h"
 
 int windowWidth = 800;
 int windowHeight = 700;
@@ -87,55 +88,45 @@ void DrawCell(Vector2 cellPos, int boardVal)
     }
 }
 
-void PlaceChip(int rowIndex, int columnIndex)
-{
-    PlayerPlaceChip(rowIndex, columnIndex);
-}
-
 void UpdateDrawFrame()
 {
     BeginDrawing();
 
     ClearBackground(RAYWHITE);
 
-    // draw the player turn text
-    int playerIndex = GetCurrentPlayerIndex();
-    char str[128];
-    sprintf(str, "Player %d turn", playerIndex);
-    int textWidthHalf = MeasureText(str, 30) * 0.5f;
-    DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, playerIndex == 1 ? player1Color : player2Color);
-
     // draw the back rectangle
     DrawRectangle(backRectPos.x, backRectPos.y, backRectSize.x, backRectSize.y, BLUE);
 
-    // check mouse position and input
-    int mousePosX = GetMouseX();
-    if (mousePosX > (startCellPosX - cellHalf - cellDist))
-    { // the mouse is over the board
-        for (int col = 0; col < cellCountX; col++)
-        { // check all columns
-            if (mousePosX < columnEndPositions[col])
-            { // the mouse is over this column
+    int playerIndex = GetCurrentPlayerIndex();
 
-                // check if there is an empty spot in this column
-                int firstEmptyRow = GetFirstEmptyRowIndex(col);
-                if (firstEmptyRow < 0)
-                    break;
+    if (IsGameActive())
+    { // if the game is not finished
 
-                // draw an arrow above the column
-                Vector2 colArrowPos = {cellPositions[0][col].x - cellHalf, colArrowPosY};
-                Color arrowColor = playerIndex == 1 ? player1Color : player2Color;
-                DrawTextureEx(colArrowTex, colArrowPos, 0.f, cellTexScale, arrowColor);
+        // check mouse input
+        int selectedColumnIndex = CheckMouseInput(startCellPosX - cellHalf - cellDist, cellCountX, columnEndPositions);
 
-                if (IsMouseButtonPressed(0))
-                { // if the left mouse button was pressed this frame
-
-                    PlaceChip(firstEmptyRow, col);
-                }
-
-                break;
-            }
+        // draw an arrow above the selected column
+        if (selectedColumnIndex >= 0)
+        {
+            Vector2 colArrowPos = {cellPositions[0][selectedColumnIndex].x - cellHalf, colArrowPosY};
+            Color arrowColor = playerIndex == 1 ? player1Color : player2Color;
+            DrawTextureEx(colArrowTex, colArrowPos, 0.f, cellTexScale, arrowColor);
         }
+
+        // draw the player turn text
+        char str[32];
+        sprintf(str, "Player %d turn", playerIndex);
+        int textWidthHalf = MeasureText(str, 30) * 0.5f;
+        DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, playerIndex == 1 ? player1Color : player2Color);
+    }
+    else
+    { // if the game is finished
+        
+        // draw the game over text
+        char str[32];
+        sprintf(str, "Player %d won!", playerIndex);
+        int textWidthHalf = MeasureText(str, 30) * 0.5f;
+        DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, playerIndex == 1 ? player1Color : player2Color);
     }
 
     // draw the cells
