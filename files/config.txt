@@ -2,3 +2,7 @@ width:
 7
 height:
 6
+window width px:
+600
+window height px:
+800

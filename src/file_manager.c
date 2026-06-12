@@ -28,6 +28,16 @@ void SetSettings(char *lable, char *setting)
 
         SetBoardHeight(value);
     }
+    if (StartsWith(lable, "window width px:"))
+    {
+        sscanf(setting, "%d", &value);
+        printf("window width px %d\n", value);
+    }
+    if (StartsWith(lable, "window height px:"))
+    {
+        sscanf(setting, "%d", &value);
+        printf("window height px %d\n", value);
+    }
 }
 
 void FileManager_ReadConfigFile()
