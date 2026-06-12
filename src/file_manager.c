@@ -85,6 +85,7 @@ void ClearGameState(int cellCountX, int cellCountY)
 }
 
 #include "../include/game_logic.h"
+#include "../include/gui.h"
 
 void SetSettings(char *lable, char *setting)
 {
@@ -109,14 +110,14 @@ void SetSettings(char *lable, char *setting)
         sscanf(setting, "%d", &value);
         printf("window width px %d\n", value);
 
-
+        SetWindowWidth(value);
     }
     if (StartsWith(lable, "window height px:"))
     {
         sscanf(setting, "%d", &value);
         printf("window height px %d\n", value);
 
-        
+        SetWindowHeight(value);
     }
 }
 

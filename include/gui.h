@@ -13,4 +13,7 @@ void GUI_DrawGame();
 
 Vector2 GetCellCount();
 
+void SetWindowWidth(int width);
+void SetWindowHeight(int height);
+
 #endif

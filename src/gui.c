@@ -97,6 +97,15 @@ void UpdateDrawFrame()
     // draw the back rectangle
     DrawRectangle(backRectPos.x, backRectPos.y, backRectSize.x, backRectSize.y, BLUE);
 
+    // draw the cells
+    for (int row = 0; row < cellCountY; row++)
+    {
+        for (int col = 0; col < cellCountX; col++)
+        {
+            DrawCell(cellPositions[row][col], GetBoardVal(row, col));
+        }
+    }
+
     int playerIndex = GetCurrentPlayerIndex();
 
     if (IsGameActive())
@@ -118,6 +127,10 @@ void UpdateDrawFrame()
         sprintf(str, "Player %d turn", playerIndex);
         int textWidthHalf = MeasureText(str, 30) * 0.5f;
         DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, playerIndex == 1 ? player1Color : player2Color);
+    
+        // draw the game state imported info
+        if (!IsGameNew())
+            DrawText("Game state imported\nfrom the save file", 20, 20, 20, GRAY);
     }
     else
     { // if the game is finished
@@ -139,15 +152,6 @@ void UpdateDrawFrame()
         }
         int textWidthHalf = MeasureText(str, 30) * 0.5f;
         DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, textColor);
-    }
-
-    // draw the cells
-    for (int row = 0; row < cellCountY; row++)
-    {
-        for (int col = 0; col < cellCountX; col++)
-        {
-            DrawCell(cellPositions[row][col], GetBoardVal(row, col));
-        }
     }
 
     EndDrawing();
@@ -192,4 +196,13 @@ void GUI_DrawGame()
 Vector2 GetCellCount()
 {
     return (Vector2){ cellCountX, cellCountY };
+}
+
+void SetWindowWidth(int width)
+{
+    windowWidth = width;
+}
+void SetWindowHeight(int height)
+{
+    windowHeight = height;
 }

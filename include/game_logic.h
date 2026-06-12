@@ -22,7 +22,7 @@ void SwitchPlayerTurn();
 int CheckIfFourCellsBelongsToOnePlayer(int y, int x, int direction); // 0 - right, 1 - diagonalDownRight, 2 - down,3 - diagonalDownLeft
 // returns 0 if nothing found, 1 if player 1 won, 2 if player 2 won & 3 if its a draw
 int IsGameFinished();
-
+int IsGameNew();
 int IsGameActive();
 void GameOver(int winner);
 // returns 0 if no winner, 1 if player 1 won, 2 if player 2 won & 3 if its a draw

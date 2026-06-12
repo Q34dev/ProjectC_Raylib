@@ -7,6 +7,7 @@ Vector2 boardSize = (Vector2){7,6};
 int gameActive;
 int currentPlayerIndex;
 int winnerIndex;
+int newGame = 1;
 
 void SetBoardWidth(int width)
 {
@@ -57,7 +58,7 @@ void GameLogic_Setup()
 
     // load the game data from the save file
     LoadGameState(&currentPlayerIndex, boardSizeX, boardSizeY, board);
-    int newGame = IsBoardEmpty(boardSizeX, boardSizeY, board);
+    newGame = IsBoardEmpty(boardSizeX, boardSizeY, board);
 }
 
 int GetBoardVal(int rowIndex, int columnIndex)
@@ -173,7 +174,7 @@ int IsGameFinished()
     else
         return 0; // game not finished
 }
-
+int IsGameNew() { return newGame; }
 int IsGameActive()
 {
     return gameActive;
