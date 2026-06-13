@@ -131,6 +131,9 @@ void UpdateDrawFrame()
         // draw the game state imported info
         if (!IsGameNew())
             DrawText("Game state imported\nfrom the save file", 20, 20, 20, GRAY);
+
+        // draw the reset game button
+        DrawResetButton(windowHeight);
     }
     else
     { // if the game is finished
@@ -151,11 +154,11 @@ void UpdateDrawFrame()
             textColor = drawColor;
         }
         int textWidthHalf = MeasureText(str, 30) * 0.5f;
-        DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 20, 30, textColor);
-    }
+        DrawText(str, (windowWidth * 0.5f) - textWidthHalf, 50, 30, textColor);
 
-    // draw the reset game button
-    DrawResetButton(windowHeight);
+        // draw the play again button
+        DrawPlayAgainButton(windowWidth, windowHeight);
+    }
 
     EndDrawing();
 }

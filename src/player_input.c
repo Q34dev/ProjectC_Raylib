@@ -1,6 +1,7 @@
 #include "../include/game_logic.h"
 
 int mouseOverResetBtn = 0;
+int mouseOverPlayAgainBtn = 0;
 
 void PlaceChip(int rowIndex, int columnIndex)
 {
@@ -12,8 +13,8 @@ int CheckMouseInput(float minXPos, int cellCountX,  float* columnEndPositions)
     // check mouse position and input
     // and return selected column's index
 
-    if (mouseOverResetBtn)
-    { // if the mouse cursor is hovering over the reset button instead
+    if (mouseOverResetBtn == 1 || mouseOverPlayAgainBtn == 1)
+    { // if the mouse cursor is hovering over any button instead
         // don't detect the board input
         return -1;
     }
@@ -66,10 +67,10 @@ void DrawResetButton(int windowHeight)
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         { // pressed the button
             
+            mouseOverResetBtn = 0;
             ResetGame();
         }
-
-        mouseOverResetBtn = 1;
+        else mouseOverResetBtn = 1;
     }
     else
     { // mouse cursor is not hovering over
@@ -85,4 +86,43 @@ void DrawResetButton(int windowHeight)
     btnTxtPos.x += (btnSize.x * 0.5f) - textWidthHalf;
     btnTxtPos.y += (btnSize.y * 0.5f) - 10.f;
     DrawText("RESET", btnTxtPos.x, btnTxtPos.y, 20, BLACK);
+}
+
+void DrawPlayAgainButton(int windowWidth, int windowHeight)
+{
+    Vector2 btnSize = { 200.f, 60.f };
+    Vector2 btnPos = { (windowWidth*0.5f)-(btnSize.x*0.5f), windowHeight-95.f };
+
+    Rectangle btnRect = { btnPos.x, btnPos.y, btnSize.x, btnSize.y };
+
+    Vector2 mousePos = { 0.f, 0.f };
+    mousePos = GetMousePosition();
+
+    if (CheckCollisionPointRec(mousePos, btnRect))
+    { // mouse cursor is hovering over the button
+        
+        DrawRectangle(btnPos.x, btnPos.y, btnSize.x, btnSize.y, BLUE);
+
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+        { // pressed the button
+            
+            mouseOverPlayAgainBtn = 0;
+            ResetGame();
+        }
+        else mouseOverPlayAgainBtn = 1;
+    }
+    else
+    { // mouse cursor is not hovering over
+
+        DrawRectangle(btnPos.x, btnPos.y, btnSize.x, btnSize.y, DARKBLUE);
+
+        mouseOverPlayAgainBtn = 0;
+    }
+    
+    // draw the button caption
+    Vector2 btnTxtPos = btnPos;
+    int textWidthHalf = MeasureText("PLAY AGAIN", 20) * 0.5f;
+    btnTxtPos.x += (btnSize.x * 0.5f) - textWidthHalf;
+    btnTxtPos.y += (btnSize.y * 0.5f) - 10.f;
+    DrawText("PLAY AGAIN", btnTxtPos.x, btnTxtPos.y, 20, WHITE);
 }

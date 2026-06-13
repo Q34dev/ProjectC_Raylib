@@ -9,5 +9,6 @@ void PlaceChip(int rowIndex, int columnIndex);
 int CheckMouseInput(float minXPos, int cellCountX, float* columnEndPositions);
 
 void DrawResetButton(int windowHeight);
+void DrawPlayAgainButton(int windowWidth, int windowHeight);
 
 #endif
