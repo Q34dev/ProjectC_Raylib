@@ -43,6 +43,7 @@ void LoadGameState(int *playerTurnIndex, int cellCountX, int cellCountY, int **b
     int value;
     while (fgets(fileLine, 100, saveFile))
     {
+        if (y >= cellCountY) break;
         if (y == -1)
         {
             sscanf(fileLine, "%d", &value);
