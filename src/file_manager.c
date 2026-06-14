@@ -2,22 +2,24 @@
 #include <stdio.h>
 #include <string.h>
 
-int StartsWith(const char *str, const char *prefix)
+int StartsWith(const char* str, const char* prefix)
 {
     while (*prefix && *str == *prefix)
         ++str, ++prefix;
     return *prefix == 0;
 }
 
-void SaveGameState(int playerTurnIndex, int cellCountX, int cellCountY, int **board)
+void SaveGameState(int playerTurnIndex, int cellCountX, int cellCountY, int** board)
 {
-    FILE *saveFile = fopen("files/save.txt", "w");
+    FILE* saveFile = fopen("files/save.txt", "w");
     if (saveFile == NULL)
     {
         printf("save file not found");
         return;
     }
     fprintf(saveFile, "%d\n", playerTurnIndex);
+    fprintf(saveFile, "%d\n", cellCountX);
+    fprintf(saveFile, "%d\n", cellCountY);
     for (int row = 0; row < cellCountY; row++)
     {
         for (int col = 0; col < cellCountX; col++)
@@ -26,29 +28,78 @@ void SaveGameState(int playerTurnIndex, int cellCountX, int cellCountY, int **bo
         }
         fprintf(saveFile, "\n");
     }
-    
+
+    fclose(saveFile);
+}
+void ClearGameState(int cellCountX, int cellCountY)
+{
+    FILE* saveFile = fopen("files/save.txt", "w");
+    if (saveFile == NULL)
+    {
+        printf("save file not found");
+        return;
+    }
+    fprintf(saveFile, "%d\n", 1);
+    fprintf(saveFile, "%d\n", cellCountX);
+    fprintf(saveFile, "%d\n", cellCountY);
+    for (int row = 0; row < cellCountY; row++)
+    {
+        for (int col = 0; col < cellCountX; col++)
+        {
+            fprintf(saveFile, "%d", 0);
+        }
+        fprintf(saveFile, "\n");
+    }
+
     fclose(saveFile);
 }
 
-void LoadGameState(int *playerTurnIndex, int cellCountX, int cellCountY, int **board)
+void LoadGameState(int* playerTurnIndex, int cellCountX, int cellCountY, int** board)
 {
-    FILE *saveFile = fopen("files/save.txt", "r");
+    FILE* saveFile = fopen("files/save.txt", "r");
     if (saveFile == NULL)
     {
         printf("save file not found");
         return;
     }
     char fileLine[100];
-    int y = -1;
+    int y = -3;
     int value;
     while (fgets(fileLine, 100, saveFile))
     {
         if (y >= cellCountY) break;
-        if (y == -1)
+
+        if (y == -3)
         {
             sscanf(fileLine, "%d", &value);
 
             *playerTurnIndex = (value == 1 || value == 2) ? value : 1;
+            y++;
+            continue;
+        }
+        if (y == -2)
+        {
+            sscanf(fileLine, "%d", &value);
+
+            if (value != cellCountX)
+            {
+                printf("A");
+                ClearGameState(cellCountX, cellCountY);
+                break;
+            }
+            y++;
+            continue;
+        }
+        if (y == -1)
+        {
+            sscanf(fileLine, "%d", &value);
+
+            if (value != cellCountY)
+            {
+                printf("B %d\n ", value);
+                ClearGameState(cellCountX, cellCountY);
+                break;
+            }
             y++;
             continue;
         }
@@ -64,31 +115,12 @@ void LoadGameState(int *playerTurnIndex, int cellCountX, int cellCountY, int **b
     fclose(saveFile);
 }
 
-void ClearGameState(int cellCountX, int cellCountY)
-{
-    FILE *saveFile = fopen("files/save.txt", "w");
-    if (saveFile == NULL)
-    {
-        printf("save file not found");
-        return;
-    }
-    fprintf(saveFile, "%d\n", 1);
-    for (int row = 0; row < cellCountY; row++)
-    {
-        for (int col = 0; col < cellCountX; col++)
-        {
-            fprintf(saveFile, "%d", 0);
-        }
-        fprintf(saveFile, "\n");
-    }
-    
-    fclose(saveFile);
-}
+
 
 #include "../include/game_logic.h"
 #include "../include/gui.h"
 
-void SetSettings(char *lable, char *setting)
+void SetSettings(char* lable, char* setting)
 {
     int value;
 
@@ -124,7 +156,7 @@ void SetSettings(char *lable, char *setting)
 
 void FileManager_ReadConfigFile()
 {
-    FILE *file = fopen("files/config.txt", "r");
+    FILE* file = fopen("files/config.txt", "r");
     if (file == NULL)
     {
         printf("config file not found");
